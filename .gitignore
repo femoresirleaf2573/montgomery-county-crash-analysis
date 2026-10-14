@@ -3,3 +3,6 @@ __pycache__/
 .DS_Store
 data/*.csv
 sql/*.db
+# Local SQLite databases
+sql/*.db
+sql/*.db-*
