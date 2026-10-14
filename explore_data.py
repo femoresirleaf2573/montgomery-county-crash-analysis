@@ -134,3 +134,40 @@ plt.savefig("visualizations/crashes_by_weekday.png", dpi=300)
 
 plt.show()
 
+# Analyze crashes by hour of the day
+df["Crash Hour"] = dates.dt.hour
+
+# Count crashes during each hour
+hourly_crashes = df["Crash Hour"].value_counts()
+
+# Put the hours in order from 0 to 23
+hourly_crashes = hourly_crashes.sort_index()
+
+print("\nCrashes by hour of the day:")
+print(hourly_crashes)
+
+# Create a chart for crashes by hour
+plt.figure(figsize=(12, 6))
+
+plt.bar(
+    hourly_crashes.index,
+    hourly_crashes.values,
+    color="#2563EB"
+)
+
+plt.title("Montgomery County Traffic Crashes by Hour", fontsize=15)
+plt.xlabel("Hour of Day (24-Hour Clock)")
+plt.ylabel("Number of Reported Crashes")
+
+# Show all 24 hours on the x-axis
+plt.xticks(range(24))
+
+plt.ylim(0, 10500)
+plt.grid(axis="y", alpha=0.2)
+plt.tight_layout()
+
+# Save the chart
+plt.savefig("visualizations/crashes_by_hour.png", dpi=300)
+
+plt.show()
+
