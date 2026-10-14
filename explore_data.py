@@ -171,3 +171,45 @@ plt.savefig("visualizations/crashes_by_hour.png", dpi=300)
 
 plt.show()
 
+# Analyze crash severity
+severity_counts = df["ACRS Report Type"].value_counts()
+
+# Calculate the percentage for each category
+severity_percentages = (
+    severity_counts / len(df)
+) * 100
+
+print("\nCrash severity percentages:")
+print(severity_percentages.round(2))
+
+# Create a chart for crash severity
+plt.figure(figsize=(10, 5))
+
+bars = plt.barh(
+    severity_percentages.index,
+    severity_percentages.values,
+    color=["#2563EB", "#E69F00", "#D55E5E"]
+)
+
+# Add percentage labels
+for bar in bars:
+    width = bar.get_width()
+    plt.text(
+        width + 0.5,
+        bar.get_y() + bar.get_height() / 2,
+        f"{width:.2f}%",
+        va="center"
+    )
+
+plt.title("Montgomery County Crashes by Severity", fontsize=15)
+plt.xlabel("Percentage of Reported Crashes")
+plt.ylabel("Crash Type")
+
+plt.xlim(0, 75)
+plt.gca().invert_yaxis()
+plt.grid(axis="x", alpha=0.2)
+plt.tight_layout()
+
+plt.savefig("visualizations/crashes_by_severity.png", dpi=300)
+
+plt.show()
