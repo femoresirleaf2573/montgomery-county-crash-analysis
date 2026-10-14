@@ -82,3 +82,55 @@ plt.savefig("visualizations/crashes_by_year.png", dpi=300)
 
 plt.show()
 
+# Analyze crashes by day of the week
+df["Day of Week"] = dates.dt.day_name()
+
+# Put the days in the correct order
+days = [
+    "Monday", "Tuesday", "Wednesday",
+    "Thursday", "Friday", "Saturday", "Sunday"
+]
+
+# Count crashes for each day
+daily_crashes = df["Day of Week"].value_counts()
+
+# Reorder the results
+daily_crashes = daily_crashes.reindex(days)
+
+print("\nCrashes by day of the week:")
+print(daily_crashes)
+
+
+# Create a chart for crashes by weekday
+plt.figure(figsize=(10, 6))
+
+bars = plt.bar(
+    daily_crashes.index,
+    daily_crashes.values,
+    color="#2563EB"
+)
+
+# Add crash counts above the bars
+for bar in bars:
+    height = bar.get_height()
+    plt.text(
+        bar.get_x() + bar.get_width() / 2,
+        height + 150,
+        f"{int(height):,}",
+        ha="center",
+        fontsize=10
+    )
+
+plt.title("Montgomery County Traffic Crashes by Day of Week", fontsize=14)
+plt.xlabel("Day of Week")
+plt.ylabel("Number of Reported Crashes")
+
+plt.ylim(0, 23000)
+plt.grid(axis="y", alpha=0.2)
+plt.tight_layout()
+
+# Save the chart
+plt.savefig("visualizations/crashes_by_weekday.png", dpi=300)
+
+plt.show()
+
