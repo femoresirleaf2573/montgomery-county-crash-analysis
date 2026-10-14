@@ -14,15 +14,25 @@ st.write("Exploring traffic crash patterns from 2015 to 2026.")
 # Load data
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data/crashes.csv", low_memory=False)
+    df = pd.read_csv("dashboard_data.csv", low_memory=False)
+
+    df = df.rename(columns={
+        "Crash Date/Time": "Crash Date/Time",
+        "ACRS Report Type": "ACRS Report Type",
+        "Weather": "Weather"
+    })
+
     df["Crash Date/Time"] = pd.to_datetime(
         df["Crash Date/Time"],
         format="%m/%d/%Y %I:%M:%S %p",
         errors="coerce"
     )
+
     df["Year"] = df["Crash Date/Time"].dt.year
     df["Hour"] = df["Crash Date/Time"].dt.hour
+
     return df
+
 
 df = load_data()
 
