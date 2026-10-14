@@ -1,0 +1,84 @@
+from pathlib import Path
+
+Path("visualizations").mkdir(exist_ok=True)
+import pandas as pd
+
+# Load the crash data
+df = pd.read_csv("data/crashes.csv", low_memory=False)
+
+# Count rows and columns
+print("Total rows:", len(df))
+print("Total columns:", len(df.columns))
+print(df["Crash Date/Time"].head(5).to_list())
+# Convert crash dates
+dates = pd.to_datetime(
+    df["Crash Date/Time"],
+    format="%m/%d/%Y %I:%M:%S %p",
+    errors="coerce"
+)
+print("Unparsed dates:", dates.isna().sum())
+print("\nEarliest crash:", dates.min())
+print("Latest crash:", dates.max())
+
+# Count crash report types
+print("\nCrash report types:")
+print(df["ACRS Report Type"].value_counts())
+
+# Check missing values
+print("\nMissing values by column:")
+print(df.isnull().sum().sort_values(ascending=False))
+
+# Check duplicate report numbers
+print("\nDuplicate report numbers:")
+print(df["Report Number"].duplicated().sum())
+
+
+# Count crashes by year
+df["Crash Year"] = dates.dt.year
+
+yearly_crashes = df["Crash Year"].value_counts().sort_index()
+
+print("\nCrashes by year:")
+print(yearly_crashes)
+
+
+import matplotlib.pyplot as plt
+
+# Exclude incomplete year 2026
+complete_years = yearly_crashes[yearly_crashes.index < 2026]
+
+# Create chart
+plt.figure(figsize=(11, 6))
+
+bars = plt.bar(
+    complete_years.index,
+    complete_years.values,
+    color="#2563EB"
+)
+
+# Add crash counts above each bar
+for bar in bars:
+    height = bar.get_height()
+    plt.text(
+        bar.get_x() + bar.get_width() / 2,
+        height + 100,
+        f"{int(height):,}",
+        ha="center",
+        fontsize=9
+    )
+
+plt.title("Montgomery County Traffic Crashes (2015–2025)", fontsize=15)
+plt.xlabel("Year")
+plt.ylabel("Number of Reported Crashes")
+
+plt.xticks(complete_years.index)
+plt.ylim(0, 14000)
+plt.grid(axis="y", alpha=0.2)
+
+plt.tight_layout()
+
+# Save image
+plt.savefig("visualizations/crashes_by_year.png", dpi=300)
+
+plt.show()
+
