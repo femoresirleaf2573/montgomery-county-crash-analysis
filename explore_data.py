@@ -213,3 +213,46 @@ plt.tight_layout()
 plt.savefig("visualizations/crashes_by_severity.png", dpi=300)
 
 plt.show()
+
+# Compare crash severity by hour of day
+severity_by_hour = df.groupby(
+    ["Crash Hour", "ACRS Report Type"]
+).size().unstack(fill_value=0)
+
+print("\nCrash severity counts by hour:")
+print(severity_by_hour)
+
+# Calculate severity percentages within each hour
+severity_hour_percent = severity_by_hour.div(
+    severity_by_hour.sum(axis=1),
+    axis=0
+) * 100
+
+print("\nCrash severity percentages by hour:")
+print(severity_hour_percent.round(2).to_string())
+
+# Create a chart for fatal crash percentages by hour
+fatal_hour_percent = severity_hour_percent["Fatal Crash"]
+
+plt.figure(figsize=(12, 6))
+
+plt.plot(
+    fatal_hour_percent.index,
+    fatal_hour_percent.values,
+    marker="o",
+    color="#D55E5E",
+    linewidth=2
+)
+
+plt.title("Fatal Crash Percentage by Hour of Day", fontsize=15)
+plt.xlabel("Hour of Day (24-Hour Clock)")
+plt.ylabel("Fatal Crashes (% of Crashes That Hour)")
+
+plt.xticks(range(24))
+plt.ylim(bottom=0)
+plt.grid(alpha=0.3)
+plt.tight_layout()
+
+plt.savefig("visualizations/fatal_crash_percentage_by_hour.png", dpi=300)
+
+plt.show()
